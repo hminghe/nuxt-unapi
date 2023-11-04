@@ -3,6 +3,9 @@ import { test, testParamsObject, testParamsString } from './api/test'
 
 const { data } = useAsyncData(() => test())
 
+const { data: a } = useFetch('/api/test')
+
+
 const objectResult = ref()
 async function postObject () {
   objectResult.value = await testParamsObject({ string: '123', number: 123, optional: '222' })
@@ -33,6 +36,7 @@ async function postString () {
 <template>
   <div>
     ssr data: {{ data }}
+    {{ a }}
     <div>
       <button @click="postObject">postObject</button>
       result: {{ objectResult }}

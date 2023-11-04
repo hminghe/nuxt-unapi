@@ -3,5 +3,8 @@ export default defineNuxtConfig({
   unapi: {
 
   },
+  experimental: {
+    asyncContext: true
+  },
   devtools: { enabled: true }
 })

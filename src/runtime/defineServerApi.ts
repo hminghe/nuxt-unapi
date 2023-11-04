@@ -29,10 +29,9 @@ export function defineServerApi<
   }
 
   return eventHandler(async (event) => {
-    const body = await readBody(event)
-
     const schema = setup.schema
     if (schema) {
+      const body = await readBody(event)
       const res = schema.safeParse(body)
       
       if (!res.success) {
@@ -47,6 +46,7 @@ export function defineServerApi<
       return setup(res.data)
     }
 
-    return setup(body)
+    // @ts-ignore
+    return setup()
   })
 }

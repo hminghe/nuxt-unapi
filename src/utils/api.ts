@@ -86,8 +86,8 @@ export function transformClientApi(code: string, file: string, apiDirs: string[]
             .map((p) => {
               if (
                 p.type === 'SpreadElement'
-              || p.key.type !== 'Identifier'
-              || !['setup', 'schema'].includes(p.key.name)
+                || p.key.type !== 'Identifier'
+                || !['setup', 'schema'].includes(p.key.name)
               ) {
                 return null
               }
@@ -208,44 +208,67 @@ export async function scanDir(dir: string) {
     .sort((a, b) => a.path.localeCompare(b.path))
 }
 
-export function generateServerApi(fullPath: string, fileRoute: string, options: ModuleOptions) {
+export async function generateServerApi(options: ModuleOptions, nuxt: Nuxt) {
   const resolver = createResolver(import.meta.url)
 
-  if (!/^[a-z0-9\-_/]+$/i.test(fileRoute)) {
-    return []
+  let genAliasXID = 0;
+  function genAlias() {
+    return `$as_${++genAliasXID}`
   }
 
-  const ast = parseCode(readFileSync(fullPath, 'utf-8'))
+  const apiDirs = getApiDirs(options, nuxt)
 
-  if (!ast) {
-    return []
+  const files = await scanFiles(apiDirs)
+
+  const routes = []
+  const imports = [
+    `import { createRouter, defineEventHandler, useBase } from 'h3'`,
+    `import { defineServerApi } from '${resolver.resolve('../runtime/defineServerApi')}';`
+  ]
+
+  const serverHandlerAlias = genAlias()
+  if (options.serverHandler?.from) {
+    imports.push(`import { ${options.serverHandler.name} as ${serverHandlerAlias} } from '${options.serverHandler.from}'`)
   }
 
-  const apis = scanExportApis(ast)
+  await Promise.all(files.map(async (file) => {
+    const fileRoute = getApiRoute(apiDirs, file.fullPath)
+    if (!fileRoute || !/^[a-z0-9\-_/]+$/i.test(fileRoute)) {
+      return
+    }
 
-  return apis.map((api) => {
+    
 
+    const ast = parseCode(readFileSync(file.fullPath, 'utf-8'))
 
-    return ({
-      route: withLeadingSlash(withoutTrailingSlash(joinURL(options.routePrefix, fileRoute, api.name === 'index' ? '' : api.name))),
-      getContents: () => {
-        const code = []
-        code.push(`import { ${api.name} } from '${fullPath}';`)
-        code.push(`import { defineServerApi } from '${resolver.resolve('../runtime/defineServerApi')}';`)
-        const defineServerApiParams = [api.name]
-        if (options.serverHandler) {
-          defineServerApiParams.push(options.serverHandler.name)
-          if (options.serverHandler.from) {
-            code.push(`import { ${options.serverHandler.name} } from '${options.serverHandler.from}'`)
-          }
-        }
+    if (!ast) {
+      return false
+    }
 
-        code.push(`export default defineServerApi(${defineServerApiParams.join(',')});`)
+    const importApiStrs = []
 
-        return code.join('\n')
-      },
+    scanExportApis(ast).forEach(({ name }) => {
+      const alias = genAlias()
+      importApiStrs.push(`${name} as ${alias}`);
+
+      const url = withLeadingSlash(withoutTrailingSlash(joinURL(options.routePrefix, fileRoute, name === 'index' ? '' : name)))
+      const defineServerApiParams = [alias]
+      if (options.serverHandler) {
+        defineServerApiParams.push(serverHandlerAlias)
+      }
+
+      routes.push(`router.post('${url}', defineServerApi(${defineServerApiParams.join(',')}))`)
     })
-  })
+
+    imports.push(`import { ${importApiStrs.join(',')} } from '${file.fullPath.replace(/.ts$/, '')}';`)
+  }))
+
+  return `${imports.join('\n')}
+const router = createRouter()
+${routes.join('\n')}
+
+export default useBase('/', router.handler)
+`
 }
 
 export function parseCode(code: string, options: ParserOptions = {

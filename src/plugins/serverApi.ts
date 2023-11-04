@@ -1,10 +1,9 @@
-import { addServerHandler, addServerImports, createResolver } from '@nuxt/kit'
+import { addServerHandler, addServerImports, addTemplate, createResolver, updateTemplates } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
-import { debounce } from "perfect-debounce";
 import type { ModuleOptions } from '../module'
 import { generateServerApi, getApiDirs, getApiRoute, getLayerDirs, scanFiles } from '../utils/api'
-import { watch } from "chokidar";
-import { NitroConfig } from 'nitropack';
+import { joinURL, withLeadingSlash, withoutTrailingSlash } from 'ufo';
+import { join } from 'pathe';
 
 function addServerImportsUtilsDirs(nuxt: Nuxt) {
   // 把 utils 目录加到 server 的自动导入去
@@ -19,8 +18,11 @@ function addServerImportsUtilsDirs(nuxt: Nuxt) {
   })
 }
 
+
 export async function serverApi(options: ModuleOptions, nuxt: Nuxt) {
   const resolver = createResolver(import.meta.url)
+
+  addServerImportsUtilsDirs(nuxt)
 
   addServerImports([
     {
@@ -33,69 +35,25 @@ export async function serverApi(options: ModuleOptions, nuxt: Nuxt) {
     },
   ])
 
-  addServerImportsUtilsDirs(nuxt)
-
-  const apiDirs = getApiDirs(options, nuxt)
-
-  const _loadHandlers = debounce(loadHandlers)
-
-  const backupConfig: Pick<NitroConfig, 'virtual' | 'handlers'> = {
-    virtual: {},
-    handlers: [],
-  }
-
-  nuxt.hook('nitro:config', async (nitroConfig) => {
-
-    if (!nitroConfig.plugins) {
-      nitroConfig.plugins = []
-    }
-
-    backupConfig.virtual = { ...nitroConfig.virtual }
-    backupConfig.handlers = [...nitroConfig.handlers]
-
-    await _loadHandlers(nitroConfig, options, apiDirs)
+  addServerHandler({
+    handler: join(nuxt.options.buildDir, 'server-unapi.ts'),
+    lazy: true,
+    route: '/api/**'
   })
 
+  addTemplate({
+    filename: 'server-unapi.ts',
+    write: true,
+    async getContents() {
+      return generateServerApi(options, nuxt)
+    }
+  })
 
-
-  nuxt.hook('nitro:build:before', (nitro) => {
-    const watcher = watch(apiDirs, { ignoreInitial: true })
-      .on('all', async () => {
-        nitro.options.virtual = { ...backupConfig.virtual }
-        nitro.options.handlers = [ ...backupConfig.handlers ]
-
-        await _loadHandlers(nitro.options, options, apiDirs)
-        nitro.vfs = nitro.options.virtual
-        await nitro.hooks.callHook('rollup:reload')
+  nuxt.hook('builder:watch', async (event, path) => {
+    if (path.startsWith(options.apiDir)) {
+      await updateTemplates({
+        filter: (t) => t.filename === 'server-unapi.ts'
       })
-
-    nitro.hooks.hook("close", () => {
-      watcher.close();
-    });
-  })
-}
-
-async function loadHandlers(nitroConfig: NitroConfig, options: ModuleOptions, apiDirs: string[]) {
-  const files = await scanFiles(apiDirs)
-
-  await Promise.all(files.map(async (file) => {
-    const fileRoute = getApiRoute(apiDirs, file.fullPath)
-    if (!fileRoute) {
-      return
     }
-
-    const apis = await generateServerApi(file.fullPath, fileRoute, options)
-    apis.forEach((api) => {
-      if (!nitroConfig.virtual) {
-        nitroConfig.virtual = {}
-      }
-      if (!nitroConfig.virtual[`#unapi${api.route}`]) {
-        nitroConfig.virtual[`#unapi${api.route}`] = api.getContents()
-        nitroConfig.handlers.push({
-          route: api.route,
-          handler: `#unapi${api.route}`,
-        })
-      }
-    })
-  }))
+  })
 }
