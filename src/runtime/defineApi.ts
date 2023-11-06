@@ -10,7 +10,7 @@ export interface DefineApiOptions<Schema extends ZodType<any, any, any>, SetupRe
 
 export interface DefineApiOptions2<SetupReturn> {
   middlewares?: EventHandler[],
-  setup: () => SetupReturn
+  setup: (data?: any) => SetupReturn
 }
 
 export function defineApi<Schema extends ZodType<any, any, any>, SetupReturn>(options: DefineApiOptions<Schema, SetupReturn>): DefineApiOptions<Schema, SetupReturn>['setup'] & Omit<DefineApiOptions<Schema, SetupReturn>, 'setup'>

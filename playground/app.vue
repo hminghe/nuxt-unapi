@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { test, testParamsObject, testParamsString } from './api/test'
+import { test, testParamsObject, testParamsString, uploadFile } from './api/test'
 
 const { data } = useAsyncData(() => test())
 
@@ -31,6 +31,18 @@ async function postString () {
   stringResult.value = await testParamsString("123")
 }
 
+const uploadFileResult = ref()
+async function onUploadFile (event: Event & { target: HTMLInputElement }) {
+  console.log('event', event)
+  if (event.target.files) {
+    const file = event.target.files[0]
+    console.log('file', file)
+    const fd = new FormData()
+    fd.append('file', file)
+    uploadFileResult.value = await uploadFile(fd)
+  }
+}
+
 </script>
 
 <template>
@@ -50,6 +62,11 @@ async function postString () {
     <div>
       <button @click="postString">postString</button>
       result: {{ stringResult }}
+    </div>
+
+    <div>
+      <input type="file" @change="onUploadFile" />
+      result: {{ uploadFileResult }}
     </div>
   </div>
 </template>

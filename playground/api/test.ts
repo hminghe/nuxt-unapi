@@ -50,3 +50,14 @@ export const testParamsString = defineApi({
     return data + ' test'
   }
 })
+
+
+export const uploadFile = defineApi({
+  async setup () {
+    const event = useEvent()
+    const multipart = await readMultipartFormData(event)
+
+    delete multipart[0].data
+    return multipart[0]
+  }
+})
