@@ -3,9 +3,9 @@ import { readFileSync } from 'node:fs'
 import { parse } from '@babel/parser'
 import type { ParseResult, ParserOptions } from '@babel/parser'
 import _traverse from '@babel/traverse'
+import _generator from '@babel/generator'
 import type { CallExpression, ExportNamedDeclaration, File, Function } from '@babel/types'
 import type { NodePath } from '@babel/traverse'
-import generator from '@babel/generator'
 import type { Nuxt } from '@nuxt/schema'
 import { globby } from 'globby'
 import * as t from '@babel/types'
@@ -15,6 +15,8 @@ import { resolver } from '../resolver'
 
 // @ts-ignore
 const traverse: typeof _traverse = _traverse.default ? _traverse.default : _traverse
+// @ts-ignore
+const generator: typeof _generator = _generator.default ? _generator.default : _generator
 
 interface ExportApi {
   name: string
