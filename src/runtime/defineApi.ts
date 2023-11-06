@@ -2,12 +2,12 @@ import type { ZodType, z } from 'zod'
 
 export interface DefineApiOptions<Schema extends ZodType<any, any, any>, SetupReturn> {
   schema: Schema
-  interceptor?: () => void
+  // interceptor?: () => void
   setup: (data: z.infer<Schema>) => SetupReturn
 }
 
 export interface DefineApiOptions2<SetupReturn> {
-  interceptor?: () => void
+  // interceptor?: () => void
   setup: () => SetupReturn
 }
 

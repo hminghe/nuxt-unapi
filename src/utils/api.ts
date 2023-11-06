@@ -2,7 +2,7 @@ import { join, relative } from 'pathe'
 import { readFileSync } from 'node:fs'
 import { parse } from '@babel/parser'
 import type { ParseResult, ParserOptions } from '@babel/parser'
-import traverse from '@babel/traverse'
+import _traverse from '@babel/traverse'
 import type { CallExpression, ExportNamedDeclaration, File, Function } from '@babel/types'
 import type { NodePath } from '@babel/traverse'
 import generator from '@babel/generator'
@@ -12,6 +12,9 @@ import * as t from '@babel/types'
 import { createResolver } from '@nuxt/kit'
 import { joinURL, withLeadingSlash, withoutTrailingSlash } from 'ufo'
 import type { ModuleOptions } from '../module'
+
+// @ts-ignore
+const traverse: typeof _traverse = _traverse.default ? _traverse.default : _traverse
 
 interface ExportApi {
   name: string
@@ -63,7 +66,7 @@ export function transformClientApi(code: string, file: string, apiDirs: string[]
   const exportApis = scanExportApis(ast)
 
   if (exportApis.length) {
-    if (options.clientHandler.from) {
+    if (options.clientHandler?.from) {
       const importClientHandlerStatement = t.importDeclaration(
         [t.importSpecifier(t.identifier(options.clientHandler.name), t.identifier(options.clientHandler.name))],
         t.stringLiteral(options.clientHandler.from)
@@ -74,14 +77,15 @@ export function transformClientApi(code: string, file: string, apiDirs: string[]
     exportApis.forEach(({ name, defineApiPath }) => {
       const apiRoute = getApiRoute(apiDirs, file, name, options.routePrefix)!
 
-      // 创建 setup 函数：(data) => apiPost("${url}", data)
+      // 创建 setup 函数：(data) => clientHandler("${url}", data)
       const clientApiArrowFunction = t.arrowFunctionExpression(
         [t.identifier('data')],
-        t.callExpression(t.identifier(options.clientHandler.name), [t.stringLiteral(apiRoute), t.identifier('data')]),
+        t.callExpression(t.identifier(options.clientHandler!.name), [t.stringLiteral(apiRoute), t.identifier('data')]),
       )
 
       defineApiPath.node.arguments = defineApiPath.node.arguments.map((v) => {
         if (v.type === 'ObjectExpression') {
+          // @ts-ignore
           v.properties = v.properties
             .map((p) => {
               if (
@@ -220,7 +224,7 @@ export async function generateServerApi(options: ModuleOptions, nuxt: Nuxt) {
 
   const files = await scanFiles(apiDirs)
 
-  const routes = []
+  const routes: string[] = []
   const imports = [
     `import { createRouter, defineEventHandler, useBase } from 'h3'`,
     `import { defineServerApi } from '${resolver.resolve('../runtime/defineServerApi')}';`
@@ -238,20 +242,21 @@ export async function generateServerApi(options: ModuleOptions, nuxt: Nuxt) {
     }
 
     
+    const code = readFileSync(file.fullPath, 'utf-8')
 
-    const ast = parseCode(readFileSync(file.fullPath, 'utf-8'))
+    const ast = parseCode(code)
 
     if (!ast) {
       return false
     }
 
-    const importApiStrs = []
+    const importApiStrs: string[] = []
 
     scanExportApis(ast).forEach(({ name }) => {
       const alias = genAlias()
       importApiStrs.push(`${name} as ${alias}`);
 
-      const url = withLeadingSlash(withoutTrailingSlash(joinURL(options.routePrefix, fileRoute, name === 'index' ? '' : name)))
+      const url = withLeadingSlash(withoutTrailingSlash(joinURL(options.routePrefix || '', fileRoute, name === 'index' ? '' : name)))
       const defineServerApiParams = [alias]
       if (options.serverHandler) {
         defineServerApiParams.push(serverHandlerAlias)

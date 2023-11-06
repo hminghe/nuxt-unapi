@@ -1,11 +1,9 @@
 import { createUnplugin } from 'unplugin'
 import type { Nuxt } from '@nuxt/schema'
-import { minimatch } from 'minimatch'
 import { addBuildPlugin, addImports, createResolver } from '@nuxt/kit'
 
 import type { ModuleOptions } from '../module'
 import { getApiDirs, transformClientApi } from '../utils/api'
-import { join } from 'pathe'
 
 export function ClientApiPlugin(options: ModuleOptions, nuxt: Nuxt) {
   const apiDirs = getApiDirs(options, nuxt)
@@ -14,8 +12,8 @@ export function ClientApiPlugin(options: ModuleOptions, nuxt: Nuxt) {
       name: 'unplugin-unapi',
       enforce: 'pre',
       transformInclude(id) {
-        return id.endsWith('ts') && apiDirs.some(dir => {
-          return minimatch(id, join(dir, '**/*.ts'))
+        return id.endsWith('.ts') && apiDirs.some(dir => {
+          return id.startsWith(dir)
         })
       },
       transform(code, id) {
@@ -27,6 +25,7 @@ export function ClientApiPlugin(options: ModuleOptions, nuxt: Nuxt) {
 
 export function clientApi(options: ModuleOptions, nuxt: Nuxt) {
   const resolver = createResolver(import.meta.url)
+  console.log(resolver.resolve('../runtime/defineApi'))
   addImports([
     {
       name: 'defineApi',

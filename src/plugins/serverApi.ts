@@ -1,8 +1,7 @@
 import { addServerHandler, addServerImports, addTemplate, createResolver, updateTemplates } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import type { ModuleOptions } from '../module'
-import { generateServerApi, getApiDirs, getApiRoute, getLayerDirs, scanFiles } from '../utils/api'
-import { joinURL, withLeadingSlash, withoutTrailingSlash } from 'ufo';
+import { generateServerApi, getLayerDirs } from '../utils/api'
 import { join } from 'pathe';
 
 function addServerImportsUtilsDirs(nuxt: Nuxt) {
@@ -29,30 +28,32 @@ export async function serverApi(options: ModuleOptions, nuxt: Nuxt) {
       name: 'defineApi',
       from: resolver.resolve('../runtime/defineApi'),
     },
-    {
-      name: 'addApiInterceptor',
-      from: resolver.resolve('../runtime/defineServerApi'),
-    },
+    // {
+    //   name: 'addApiInterceptor',
+    //   from: resolver.resolve('../runtime/defineServerApi'),
+    // },
   ])
 
-  addServerHandler({
-    handler: join(nuxt.options.buildDir, 'server-unapi.ts'),
-    lazy: true,
-    route: '/api/**'
-  })
+  const genServerFileName = 'server-unapi.ts'
 
   addTemplate({
-    filename: 'server-unapi.ts',
+    filename: genServerFileName,
     write: true,
     async getContents() {
       return generateServerApi(options, nuxt)
     }
   })
 
+  addServerHandler({
+    handler: join(nuxt.options.buildDir, genServerFileName),
+    lazy: true,
+    route: '/api/**'
+  })
+
   nuxt.hook('builder:watch', async (event, path) => {
-    if (path.startsWith(options.apiDir)) {
+    if (path.startsWith(options.apiDir!)) {
       await updateTemplates({
-        filter: (t) => t.filename === 'server-unapi.ts'
+        filter: (t) => t.filename === genServerFileName
       })
     }
   })
