@@ -1,8 +1,9 @@
-import { addServerHandler, addServerImports, addTemplate, createResolver, updateTemplates } from '@nuxt/kit'
+import { addServerHandler, addServerImports, addTemplate, updateTemplates } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import type { ModuleOptions } from '../module'
 import { generateServerApi, getLayerDirs } from '../utils/api'
 import { join } from 'pathe';
+import { resolver } from '../resolver';
 
 function addServerImportsUtilsDirs(nuxt: Nuxt) {
   // 把 utils 目录加到 server 的自动导入去
@@ -19,14 +20,13 @@ function addServerImportsUtilsDirs(nuxt: Nuxt) {
 
 
 export async function serverApi(options: ModuleOptions, nuxt: Nuxt) {
-  const resolver = createResolver(import.meta.url)
 
   addServerImportsUtilsDirs(nuxt)
 
   addServerImports([
     {
       name: 'defineApi',
-      from: resolver.resolve('../runtime/defineApi'),
+      from: resolver.resolve('./runtime/defineApi'),
     },
     // {
     //   name: 'addApiInterceptor',

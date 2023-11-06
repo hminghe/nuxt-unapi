@@ -1,9 +1,10 @@
 import { createUnplugin } from 'unplugin'
 import type { Nuxt } from '@nuxt/schema'
-import { addBuildPlugin, addImports, createResolver } from '@nuxt/kit'
+import { addBuildPlugin, addImports } from '@nuxt/kit'
 
 import type { ModuleOptions } from '../module'
 import { getApiDirs, transformClientApi } from '../utils/api'
+import { resolver } from '../resolver'
 
 export function ClientApiPlugin(options: ModuleOptions, nuxt: Nuxt) {
   const apiDirs = getApiDirs(options, nuxt)
@@ -24,19 +25,18 @@ export function ClientApiPlugin(options: ModuleOptions, nuxt: Nuxt) {
 }
 
 export function clientApi(options: ModuleOptions, nuxt: Nuxt) {
-  const resolver = createResolver(import.meta.url)
-  console.log(resolver.resolve('../runtime/defineApi'))
+  
   addImports([
     {
       name: 'defineApi',
-      from: resolver.resolve('../runtime/defineApi'),
+      from: resolver.resolve('./runtime/defineApi'),
     },
   ])
 
   if (!options.clientHandler) {
     options.clientHandler = {
       name: 'clientHandler',
-      from: resolver.resolve('../runtime/clientHandler'),
+      from: resolver.resolve('./runtime/clientHandler'),
     }
   }
 

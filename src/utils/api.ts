@@ -9,9 +9,9 @@ import generator from '@babel/generator'
 import type { Nuxt } from '@nuxt/schema'
 import { globby } from 'globby'
 import * as t from '@babel/types'
-import { createResolver } from '@nuxt/kit'
 import { joinURL, withLeadingSlash, withoutTrailingSlash } from 'ufo'
 import type { ModuleOptions } from '../module'
+import { resolver } from '../resolver'
 
 // @ts-ignore
 const traverse: typeof _traverse = _traverse.default ? _traverse.default : _traverse
@@ -213,7 +213,6 @@ export async function scanDir(dir: string) {
 }
 
 export async function generateServerApi(options: ModuleOptions, nuxt: Nuxt) {
-  const resolver = createResolver(import.meta.url)
 
   let genAliasXID = 0;
   function genAlias() {
@@ -227,7 +226,7 @@ export async function generateServerApi(options: ModuleOptions, nuxt: Nuxt) {
   const routes: string[] = []
   const imports = [
     `import { createRouter, defineEventHandler, useBase } from 'h3'`,
-    `import { defineServerApi } from '${resolver.resolve('../runtime/defineServerApi')}';`
+    `import { defineServerApi } from '${resolver.resolve('./runtime/defineServerApi')}';`
   ]
 
   const serverHandlerAlias = genAlias()
