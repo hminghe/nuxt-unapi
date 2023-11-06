@@ -4,31 +4,28 @@ import { createError } from '#imports'
 
 import type { ZodType } from 'zod'
 import type { DefineApiOptions } from './defineApi'
+import { isPromise } from 'node:util/types'
 
 
-// let currentInterceptors: EventHandler[] = []
-
-// export function addApiInterceptor(interceptorHandler: EventHandler) {
-//   if (!currentInterceptors) {
-//     currentInterceptors = []
-//   }
-//   currentInterceptors.push(interceptorHandler)
-// }
-
-// export function clearApiInterceptor() {
-//   currentInterceptors = []
-// }
 
 export function defineServerApi<
   SetupReturn, Schema extends ZodType<any, any, any>, T extends DefineApiOptions<Schema, SetupReturn>['setup'] & Omit<DefineApiOptions<Schema, SetupReturn>, 'setup'>,
 >(setup: T, eventHandler = defineEventHandler) {
-  // clearApiInterceptor()
 
-  // if (setup.interceptor) {
-  //   setup.interceptor()
-  // }
 
   return eventHandler(async (event) => {
+    if (setup.middlewares && setup.middlewares.length > 0) {
+      for (const middleware of setup.middlewares) {
+        let middlewareResult = middleware(event)
+        if (isPromise(middlewareResult)) {
+          middlewareResult = await middlewareResult
+        }
+        if (middlewareResult !== undefined) {
+          return middlewareResult
+        }
+      }
+    }
+
     const schema = setup.schema
     if (schema) {
       const body = await readBody(event)

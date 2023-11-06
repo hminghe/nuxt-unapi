@@ -28,10 +28,6 @@ export async function serverApi(options: ModuleOptions, nuxt: Nuxt) {
       name: 'defineApi',
       from: resolver.resolve('./runtime/defineApi'),
     },
-    // {
-    //   name: 'addApiInterceptor',
-    //   from: resolver.resolve('../runtime/defineServerApi'),
-    // },
   ])
 
   const genServerFileName = 'server-unapi.ts'

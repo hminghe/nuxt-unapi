@@ -1,13 +1,15 @@
 import type { ZodType, z } from 'zod'
+import { EventHandler } from 'h3'
+
 
 export interface DefineApiOptions<Schema extends ZodType<any, any, any>, SetupReturn> {
   schema: Schema
-  // interceptor?: () => void
+  middlewares?: EventHandler[],
   setup: (data: z.infer<Schema>) => SetupReturn
 }
 
 export interface DefineApiOptions2<SetupReturn> {
-  // interceptor?: () => void
+  middlewares?: EventHandler[],
   setup: () => SetupReturn
 }
 
