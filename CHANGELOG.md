@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.0.6
+
+[compare changes](https://github.com/hminghe/nuxt-unapi/compare/v0.0.5...v0.0.6)
+
+### 🩹 Fixes
+
+- Replace 'handle' with 'handler' ([add9240](https://github.com/hminghe/nuxt-unapi/commit/add9240))
+
+### ❤️ Contributors
+
+- Hminghe ([@hminghe](http://github.com/hminghe))
+
 ## v0.0.5
 
 [compare changes](https://github.com/hminghe/nuxt-unapi/compare/v0.0.4...v0.0.5)
