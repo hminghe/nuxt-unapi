@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v0.0.5
+
+[compare changes](https://github.com/hminghe/nuxt-unapi/compare/v0.0.4...v0.0.5)
+
+### 🚀 Enhancements
+
+- Enhance file upload compatibility ([94677ef](https://github.com/hminghe/nuxt-unapi/commit/94677ef))
+- Add defineFormDataApi ([ea9922d](https://github.com/hminghe/nuxt-unapi/commit/ea9922d))
+
+### 💅 Refactors
+
+- Rename parameter in defineApi ([0028cef](https://github.com/hminghe/nuxt-unapi/commit/0028cef))
+
+### ❤️ Contributors
+
+- Hminghe ([@hminghe](http://github.com/hminghe))
+
 ## v0.0.4
 
 [compare changes](https://github.com/hminghe/nuxt-unapi/compare/v0.0.1...v0.0.4)
