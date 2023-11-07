@@ -2,42 +2,42 @@ import type { ZodType, z } from 'zod'
 import { EventHandler } from 'h3'
 
 
-export interface DefineApiOptions<Schema extends ZodType<any, any, any>, SetupReturn> {
-  schema: Schema
+export interface DefineApiOptions<Props extends ZodType<any, any, any>, HandleReturn> {
+  props: Props
   middlewares?: EventHandler[],
-  setup: (data: z.infer<Schema>) => SetupReturn
+  handle: (data: z.infer<Props>) => HandleReturn
 }
 
-export interface DefineApiOptions2<SetupReturn> {
+export interface DefineApiOptions2<HandleReturn> {
   middlewares?: EventHandler[],
-  setup: (data?: any) => SetupReturn
+  handle: (data?: any) => HandleReturn
 }
 
-export function defineApi<Schema extends ZodType<any, any, any>, SetupReturn>(options: DefineApiOptions<Schema, SetupReturn>): DefineApiOptions<Schema, SetupReturn>['setup'] & Omit<DefineApiOptions<Schema, SetupReturn>, 'setup'>
-export function defineApi<SetupReturn>(options: DefineApiOptions2<SetupReturn>): DefineApiOptions2<SetupReturn>['setup'] & Omit<DefineApiOptions2<SetupReturn>, 'setup'>
-export function defineApi<SetupReturn>(setup: DefineApiOptions2<SetupReturn>['setup']): DefineApiOptions2<SetupReturn>['setup']
+export function defineApi<Props extends ZodType<any, any, any>, HandleReturn>(options: DefineApiOptions<Props, HandleReturn>): DefineApiOptions<Props, HandleReturn>['handle'] & Omit<DefineApiOptions<Props, HandleReturn>, 'handle'>
+export function defineApi<HandleReturn>(options: DefineApiOptions2<HandleReturn>): DefineApiOptions2<HandleReturn>['handle'] & Omit<DefineApiOptions2<HandleReturn>, 'handle'>
+export function defineApi<HandleReturn>(handle: DefineApiOptions2<HandleReturn>['handle']): DefineApiOptions2<HandleReturn>['handle']
 
-export function defineApi<Schema extends ZodType<any, any, any>, SetupReturn>(
-  setup: DefineApiOptions<Schema, SetupReturn>['setup'],
-  options: Omit<DefineApiOptions<Schema, SetupReturn>, 'setup'>
-): DefineApiOptions<Schema, SetupReturn>['setup'] & Omit<DefineApiOptions<Schema, SetupReturn>, 'setup'>
+export function defineApi<Props extends ZodType<any, any, any>, HandleReturn>(
+  handle: DefineApiOptions<Props, HandleReturn>['handle'],
+  options: Omit<DefineApiOptions<Props, HandleReturn>, 'handle'>
+): DefineApiOptions<Props, HandleReturn>['handle'] & Omit<DefineApiOptions<Props, HandleReturn>, 'handle'>
 
-export function defineApi<SetupReturn>(
-  setup: DefineApiOptions2<SetupReturn>['setup'],
-  options: Omit<DefineApiOptions2<SetupReturn>, 'setup'>
-): DefineApiOptions2<SetupReturn>['setup'] & Omit<DefineApiOptions2<SetupReturn>, 'setup'>
+export function defineApi<HandleReturn>(
+  handle: DefineApiOptions2<HandleReturn>['handle'],
+  options: Omit<DefineApiOptions2<HandleReturn>, 'handle'>
+): DefineApiOptions2<HandleReturn>['handle'] & Omit<DefineApiOptions2<HandleReturn>, 'handle'>
 
-export function defineApi<T extends { setup: any }>(optionsOrSetup: T | T['setup'], options?: T) {
+export function defineApi<T extends { handle: any }>(optionsOrHandle: T | T['handle'], options?: T) {
   const o: any = {
     ...options,
-    ...(typeof optionsOrSetup === 'function' ? { setup: optionsOrSetup } : optionsOrSetup),
+    ...(typeof optionsOrHandle === 'function' ? { handle: optionsOrHandle } : optionsOrHandle),
   }
 
   Object.keys(o).forEach((key) => {
-    if (key !== 'setup') {
-      o.setup[key] = o[key]
+    if (key !== 'handle') {
+      o.handle[key] = o[key]
     }
   })
 
-  return o.setup
+  return o.handle
 }

@@ -1,5 +1,4 @@
 import { defineEventHandler, readBody } from 'h3'
-// import type { EventHandler } from 'h3'
 import { createError } from '#imports'
 
 import type { ZodType } from 'zod'
@@ -9,13 +8,13 @@ import { isPromise } from 'node:util/types'
 
 
 export function defineServerApi<
-  SetupReturn, Schema extends ZodType<any, any, any>, T extends DefineApiOptions<Schema, SetupReturn>['setup'] & Omit<DefineApiOptions<Schema, SetupReturn>, 'setup'>,
->(setup: T, eventHandler = defineEventHandler) {
+  HandleReturn, Props extends ZodType<any, any, any>, T extends DefineApiOptions<Props, HandleReturn>['handle'] & Omit<DefineApiOptions<Props, HandleReturn>, 'handle'>,
+>(handle: T, eventHandler = defineEventHandler) {
 
 
   return eventHandler(async (event) => {
-    if (setup.middlewares && setup.middlewares.length > 0) {
-      for (const middleware of setup.middlewares) {
+    if (handle.middlewares && handle.middlewares.length > 0) {
+      for (const middleware of handle.middlewares) {
         let middlewareResult = middleware(event)
         if (isPromise(middlewareResult)) {
           middlewareResult = await middlewareResult
@@ -26,10 +25,10 @@ export function defineServerApi<
       }
     }
 
-    const schema = setup.schema
-    if (schema) {
+    const props = handle.props
+    if (props) {
       const body = await readBody(event)
-      const res = schema.safeParse(body)
+      const res = props.safeParse(body)
       
       if (!res.success) {
         throw createError({
@@ -40,10 +39,10 @@ export function defineServerApi<
         })
       }
 
-      return setup(res.data)
+      return handle(res.data)
     }
 
     // @ts-ignore
-    return setup()
+    return handle()
   })
 }

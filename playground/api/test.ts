@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const test = defineApi({
-  async setup () {
+  async handle () {
     const ctx = useEvent().context
     return 'unapi test ' + ctx.test1 + ' ' + ctx.test2
   },
@@ -18,12 +18,12 @@ export const test = defineApi({
 })
 
 export const testParamsObject = defineApi({
-  schema: z.object({
+  props: z.object({
     number: z.number(),
     string: z.string(),
     optional: z.string().optional(),
   }),
-  setup (data) {
+  handle (data) {
     return data
   },
   middlewares: [
@@ -44,16 +44,16 @@ export const testParamsObject = defineApi({
 })
 
 export const testParamsString = defineApi({
-  schema: z.string(),
+  props: z.string(),
 
-  setup (data) {
+  handle (data) {
     return data + ' test'
   }
 })
 
 
 export const uploadFile = defineApi({
-  async setup () {
+  async handle () {
     const event = useEvent()
     const multipart = await readMultipartFormData(event)
 

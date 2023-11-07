@@ -31,12 +31,6 @@ export default defineNuxtModule<ModuleOptions>({
   },
 
   setup (options, nuxt) {
-    console.log('nuxt.options.watch', nuxt.options.watch)
-    if (!nuxt.options.watch) {
-      nuxt.options.watch = []
-    }
-    nuxt.options.watch.push('api')
-
     clientApi(options, nuxt)
     serverApi(options, nuxt)
   }
