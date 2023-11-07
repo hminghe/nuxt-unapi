@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { defineFormDataApi, zFile } from "../../src/runtime/defineFormDataApi"
 
 export const test = defineApi({
   async handle () {
@@ -52,12 +53,30 @@ export const testParamsString = defineApi({
 })
 
 
-export const uploadFile = defineApi({
-  async handle () {
-    const event = useEvent()
-    const multipart = await readMultipartFormData(event)
+export const uploadFileTest = defineFormDataApi({
+  props: z.object({
+    test: z.coerce.number(),
+    test1: z.string(),
+    file: zFile(),
+  }),
 
-    delete multipart[0].data
-    return multipart[0]
+  handle (props) {
+    console.log('props', props)
+    
+    return `File size: ${props.file.data?.length}`
+  }
+})
+
+export const uploadMultipleFileTest = defineFormDataApi({
+  props: z.object({
+    test: z.coerce.number(),
+    test1: z.string(),
+    files: zFile().array(),
+  }),
+
+  handle (props) {
+    console.log('props', props)
+    
+    return `File: ${props.files.map(v => v.filename + ': ' + v.data?.length).join('----')}`
   }
 })

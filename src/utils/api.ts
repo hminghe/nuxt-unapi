@@ -32,7 +32,7 @@ export function scanExportApis(ast: ParseResult<File>) {
   traverse(ast, {
     CallExpression(path) {
       const callee = path.get('callee')
-      if (callee.isIdentifier({ name: 'defineApi' })) {
+      if (callee.isIdentifier({ name: 'defineApi' }) || callee.isIdentifier({ name: 'defineFormDataApi' })) {
         const parentPath = path.parentPath
         if (parentPath.node.type === 'VariableDeclarator' && parentPath.node.id.type === 'Identifier') {
           const name = parentPath.node.id.name

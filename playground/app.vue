@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { test, testParamsObject, testParamsString, uploadFile } from './api/test'
+import { uploadFileTest, test, testParamsObject, testParamsString, uploadMultipleFileTest } from './api/test'
 
 const { data } = useAsyncData(() => test())
 
@@ -31,17 +31,41 @@ async function postString () {
   stringResult.value = await testParamsString("123")
 }
 
-const uploadFileResult = ref()
+const uploadFileResult = ref('')
 async function onUploadFile (event: Event & { target: HTMLInputElement }) {
   console.log('event', event)
   if (event.target.files) {
     const file = event.target.files[0]
     console.log('file', file)
-    const fd = new FormData()
+    const fd = uploadFileTest.sfd()
+    fd.append('test', 123)
+    fd.append('test1', 'test')
     fd.append('file', file)
-    uploadFileResult.value = await uploadFile(fd)
+    
+    uploadFileResult.value = await uploadFileTest(fd)
+
   }
 }
+
+const uploadFileResult2 = ref('')
+async function onUploadFile2 (event: Event & { target: HTMLInputElement }) {
+  console.log('event', event)
+  if (event.target.files) {
+
+    
+    const fd = uploadMultipleFileTest.sfd()
+    fd.append('test', 123)
+    fd.append('test1', 'test')
+    for (const file of event.target.files) {
+      fd.append('files', file)
+    }
+    
+    uploadFileResult2.value = await uploadMultipleFileTest(fd)
+
+  }
+}
+
+
 
 </script>
 
@@ -67,6 +91,11 @@ async function onUploadFile (event: Event & { target: HTMLInputElement }) {
     <div>
       <input type="file" @change="onUploadFile" />
       result: {{ uploadFileResult }}
+    </div>
+
+    <div>
+      <input type="file" multiple @change="onUploadFile2" />
+      multiple result: {{ uploadFileResult2 }}
     </div>
   </div>
 </template>
