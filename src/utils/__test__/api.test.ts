@@ -39,14 +39,14 @@ test('scanExportApis-defineApi', () => {
   const ast = parse(`
   export const test = 123;
   export const a = defineApi({
-    handle() {
+    handler() {
       return 123
     },
   })
 
   export const b = () => {
     const c = defineApi({
-      handle() {
+      handler() {
         return 123
       },
     })
@@ -75,7 +75,7 @@ test('transformClientApi', () => {
   import path from 'node:path'
 
   export const a = defineApi({
-    handle: function(data) {
+    handler: function(data) {
       return path.join('/test', 'test')
     },
     props: z.number(),
@@ -89,7 +89,7 @@ test('transformClientApi', () => {
 
   const transform = transformClientApi(code, '/a/user.ts', ['/a'], { clientHandler: { name: 'apiPost' } })
   expect(transform.code).toEqual(`export const a = defineApi({
-  handle: data => apiPost("/user/a", data),
+  handler: data => apiPost("/user/a", data),
   props: z.number()
 });
 export const b = defineApi(data => apiPost("/user/b", data), {

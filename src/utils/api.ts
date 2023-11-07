@@ -79,7 +79,7 @@ export function transformClientApi(code: string, file: string, apiDirs: string[]
     exportApis.forEach(({ name, defineApiPath }) => {
       const apiRoute = getApiRoute(apiDirs, file, name, options.routePrefix)!
 
-      // 创建 handle 函数：(data) => clientHandler("${url}", data)
+      // 创建 handler 函数：(data) => clientHandler("${url}", data)
       const clientApiArrowFunction = t.arrowFunctionExpression(
         [t.identifier('data')],
         t.callExpression(t.identifier(options.clientHandler!.name), [t.stringLiteral(apiRoute), t.identifier('data')]),
@@ -93,13 +93,13 @@ export function transformClientApi(code: string, file: string, apiDirs: string[]
               if (
                 p.type === 'SpreadElement'
                 || p.key.type !== 'Identifier'
-                || !['handle', 'props'].includes(p.key.name)
+                || !['handler', 'props'].includes(p.key.name)
               ) {
                 return null
               }
 
-              if (p.key.name === 'handle') {
-                return t.objectProperty(t.identifier('handle'), clientApiArrowFunction)
+              if (p.key.name === 'handler') {
+                return t.objectProperty(t.identifier('handler'), clientApiArrowFunction)
               }
 
               return p
@@ -242,7 +242,7 @@ export async function generateServerApi(options: ModuleOptions, nuxt: Nuxt) {
       return
     }
 
-    
+
     const code = readFileSync(file.fullPath, 'utf-8')
 
     const ast = parseCode(code)

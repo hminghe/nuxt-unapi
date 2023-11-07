@@ -13,7 +13,7 @@ async function getBody (event: H3Event<EventHandlerRequest>) {
     const body: Record<string, any> = {}
 
     const formData = await readMultipartFormData(event)
-    if (formData) {  
+    if (formData) {
       formData.forEach(row => {
         console.log('row.name', row.name)
         if (row.name) {
@@ -36,7 +36,7 @@ async function getBody (event: H3Event<EventHandlerRequest>) {
     }
 
     console.log('body', body)
-    
+
     return body
   } else {
     return readBody(event)
@@ -45,13 +45,13 @@ async function getBody (event: H3Event<EventHandlerRequest>) {
 
 
 export function defineServerApi<
-  HandleReturn, Props extends ZodType<any, any, any>, T extends DefineApiOptions<Props, HandleReturn>['handle'] & Omit<DefineApiOptions<Props, HandleReturn>, 'handle'>,
->(handle: T, eventHandler = defineEventHandler) {
+  HandlerReturn, Props extends ZodType<any, any, any>, T extends DefineApiOptions<Props, HandlerReturn>['handler'] & Omit<DefineApiOptions<Props, HandlerReturn>, 'handler'>,
+>(handler: T, eventHandler = defineEventHandler) {
 
 
   return eventHandler(async (event) => {
-    if (handle.middlewares && handle.middlewares.length > 0) {
-      for (const middleware of handle.middlewares) {
+    if (handler.middlewares && handler.middlewares.length > 0) {
+      for (const middleware of handler.middlewares) {
         let middlewareResult = middleware(event)
         if (isPromise(middlewareResult)) {
           middlewareResult = await middlewareResult
@@ -62,12 +62,12 @@ export function defineServerApi<
       }
     }
 
-    const props = handle.props
+    const props = handler.props
     if (props) {
       const body = await getBody(event)
-      
+
       const res = props.safeParse(body)
-        
+
         if (!res.success) {
           throw createError({
             statusCode: 400,
@@ -77,10 +77,10 @@ export function defineServerApi<
           })
         }
 
-      return handle(res.data)
+      return handler(res.data)
     }
 
     // @ts-ignore
-    return handle()
+    return handler()
   })
 }

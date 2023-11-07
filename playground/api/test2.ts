@@ -1,12 +1,12 @@
 export const test = defineApi({
-  async handle () {
+  async handler () {
     return 'unapi test2'
   }
 })
 
 
 export const test2 = defineApi({
-  async handle () {
+  async handler () {
     return 'unapi test2'
   }
 })

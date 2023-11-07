@@ -21,27 +21,27 @@ export const zFile = () => z.custom<_File>((val) => {
 
 export function defineFormDataApi<
   Props extends ZodType<any, any, any>,
-  HandleReturn
->(options: DefineApiOptions<Props, HandleReturn>) {
+  HandlerReturn
+>(options: DefineApiOptions<Props, HandlerReturn>) {
   type Options = typeof options
-  
+
 
   const safeFormData = () => new FormData() as SafeFormData<z.infer<Props>>
   type SafeFormDataType = typeof safeFormData
-  
+
 
   const o: any = options
   o.sfd = o.safeFormData = safeFormData
   Object.keys(options).forEach((key) => {
-    o.handle[key] = o[key]
+    o.handler[key] = o[key]
   })
 
-  type Handle = (props: ReturnType<SafeFormDataType>) => HandleReturn
-  
-  return o.handle as Handle & Options & {
+  type Handler = (props: ReturnType<SafeFormDataType>) => HandlerReturn
+
+  return o.handler as Handler & Options & {
     sfd: SafeFormDataType
     safeFormData: SafeFormDataType
-    handle: Handle
+    handler: Handler
   }
 }
 

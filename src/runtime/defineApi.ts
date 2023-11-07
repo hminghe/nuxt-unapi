@@ -2,42 +2,42 @@ import type { ZodType, z } from 'zod'
 import { EventHandler } from 'h3'
 
 
-export interface DefineApiOptions<Props extends ZodType<any, any, any>, HandleReturn> {
+export interface DefineApiOptions<Props extends ZodType<any, any, any>, HandlerReturn> {
   props: Props
   middlewares?: EventHandler[],
-  handle: (data: z.infer<Props>) => HandleReturn
+  handler: (data: z.infer<Props>) => HandlerReturn
 }
 
-export interface DefineApiOptions2<HandleReturn> {
+export interface DefineApiOptions2<HandlerReturn> {
   middlewares?: EventHandler[],
-  handle: (data?: any) => HandleReturn
+  handler: (data?: any) => HandlerReturn
 }
 
-export function defineApi<Props extends ZodType<any, any, any>, HandleReturn>(options: DefineApiOptions<Props, HandleReturn>): DefineApiOptions<Props, HandleReturn>['handle'] & Omit<DefineApiOptions<Props, HandleReturn>, 'handle'>
-export function defineApi<HandleReturn>(options: DefineApiOptions2<HandleReturn>): DefineApiOptions2<HandleReturn>['handle'] & Omit<DefineApiOptions2<HandleReturn>, 'handle'>
-export function defineApi<HandleReturn>(handle: DefineApiOptions2<HandleReturn>['handle']): DefineApiOptions2<HandleReturn>['handle']
+export function defineApi<Props extends ZodType<any, any, any>, HandlerReturn>(options: DefineApiOptions<Props, HandlerReturn>): DefineApiOptions<Props, HandlerReturn>['handler'] & Omit<DefineApiOptions<Props, HandlerReturn>, 'handler'>
+export function defineApi<HandlerReturn>(options: DefineApiOptions2<HandlerReturn>): DefineApiOptions2<HandlerReturn>['handler'] & Omit<DefineApiOptions2<HandlerReturn>, 'handler'>
+export function defineApi<HandlerReturn>(handler: DefineApiOptions2<HandlerReturn>['handler']): DefineApiOptions2<HandlerReturn>['handler']
 
-export function defineApi<Props extends ZodType<any, any, any>, HandleReturn>(
-  handle: DefineApiOptions<Props, HandleReturn>['handle'],
-  options: Omit<DefineApiOptions<Props, HandleReturn>, 'handle'>
-): DefineApiOptions<Props, HandleReturn>['handle'] & Omit<DefineApiOptions<Props, HandleReturn>, 'handle'>
+export function defineApi<Props extends ZodType<any, any, any>, HandlerReturn>(
+  handler: DefineApiOptions<Props, HandlerReturn>['handler'],
+  options: Omit<DefineApiOptions<Props, HandlerReturn>, 'handler'>
+): DefineApiOptions<Props, HandlerReturn>['handler'] & Omit<DefineApiOptions<Props, HandlerReturn>, 'handler'>
 
-export function defineApi<HandleReturn>(
-  handle: DefineApiOptions2<HandleReturn>['handle'],
-  options: Omit<DefineApiOptions2<HandleReturn>, 'handle'>
-): DefineApiOptions2<HandleReturn>['handle'] & Omit<DefineApiOptions2<HandleReturn>, 'handle'>
+export function defineApi<HandlerReturn>(
+  handler: DefineApiOptions2<HandlerReturn>['handler'],
+  options: Omit<DefineApiOptions2<HandlerReturn>, 'handler'>
+): DefineApiOptions2<HandlerReturn>['handler'] & Omit<DefineApiOptions2<HandlerReturn>, 'handler'>
 
-export function defineApi<T extends { handle: any }>(optionsOrHandle: T | T['handle'], options?: T) {
+export function defineApi<T extends { handler: any }>(optionsOrHandle: T | T['handler'], options?: T) {
   const o: any = {
     ...options,
-    ...(typeof optionsOrHandle === 'function' ? { handle: optionsOrHandle } : optionsOrHandle),
+    ...(typeof optionsOrHandle === 'function' ? { handler: optionsOrHandle } : optionsOrHandle),
   }
 
   Object.keys(o).forEach((key) => {
-    if (key !== 'handle') {
-      o.handle[key] = o[key]
+    if (key !== 'handler') {
+      o.handler[key] = o[key]
     }
   })
 
-  return o.handle
+  return o.handler
 }
