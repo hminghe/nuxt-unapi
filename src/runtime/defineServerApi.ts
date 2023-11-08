@@ -15,7 +15,6 @@ async function getBody (event: H3Event<EventHandlerRequest>) {
     const formData = await readMultipartFormData(event)
     if (formData) {
       formData.forEach(row => {
-        console.log('row.name', row.name)
         if (row.name) {
           const value = row.filename ? row : row.data.toString()
 
@@ -34,8 +33,6 @@ async function getBody (event: H3Event<EventHandlerRequest>) {
         }
       })
     }
-
-    console.log('body', body)
 
     return body
   } else {
