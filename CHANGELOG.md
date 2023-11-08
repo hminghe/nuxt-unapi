@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.0.7
+
+[compare changes](https://github.com/hminghe/nuxt-unapi/compare/v0.0.6...v0.0.7)
+
+### 🏡 Chore
+
+- Auto-import defineFormDataApi ([901a7d1](https://github.com/hminghe/nuxt-unapi/commit/901a7d1))
+
+### ❤️ Contributors
+
+- Hminghe ([@hminghe](http://github.com/hminghe))
+
 ## v0.0.6
 
 [compare changes](https://github.com/hminghe/nuxt-unapi/compare/v0.0.5...v0.0.6)
