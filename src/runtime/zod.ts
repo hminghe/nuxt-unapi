@@ -4,7 +4,7 @@
 import { MultiPartData } from 'h3'
 import { z } from 'zod'
 
-type ZodFile = MultiPartData | File
+export type ZodFile = MultiPartData
 
 export const zodFile = () => z.custom<ZodFile>((val) => {
   // @ts-ignore
