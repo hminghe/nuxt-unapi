@@ -25,13 +25,21 @@ export function ClientApiPlugin(options: ModuleOptions, nuxt: Nuxt) {
 }
 
 export function clientApi(options: ModuleOptions, nuxt: Nuxt) {
-  
-  addImports([
-    {
-      name: 'defineApi',
-      from: resolver.resolve('./runtime/defineApi'),
-    },
-  ])
+
+  const imports = ['defineApi', 'defineFormDataApi', ['zodFile', 'zod']]
+
+  imports.forEach((value) => {
+    if (typeof value === 'string') {
+      value = [value, value]
+    }
+
+    addImports([
+      {
+        name: value[0],
+        from: resolver.resolve(`./runtime/${value[1]}`),
+      },
+    ])
+  })
 
   if (!options.clientHandler) {
     options.clientHandler = {

@@ -23,19 +23,20 @@ export async function serverApi(options: ModuleOptions, nuxt: Nuxt) {
 
   addServerImportsUtilsDirs(nuxt)
 
-  addServerImports([
-    {
-      name: 'defineApi',
-      from: resolver.resolve('./runtime/defineApi'),
-    },
-  ])
+  const imports = ['defineApi', 'defineFormDataApi', ['zodFile', 'zod']]
 
-  addServerImports([
-    {
-      name: 'defineFormDataApi',
-      from: resolver.resolve('./runtime/defineFormDataApi'),
-    },
-  ])
+  imports.forEach((value) => {
+    if (typeof value === 'string') {
+      value = [value, value]
+    }
+
+    addServerImports([
+      {
+        name: value[0],
+        from: resolver.resolve(`./runtime/${value[1]}`),
+      },
+    ])
+  })
 
   const genServerFileName = 'server-unapi.ts'
 
