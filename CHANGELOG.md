@@ -1,6 +1,27 @@
 # Changelog
 
 
+## v0.0.8
+
+[compare changes](https://github.com/hminghe/nuxt-unapi/compare/v0.0.7...v0.0.8)
+
+### 🚀 Enhancements
+
+- Add `TransformClientType` to distinguish server and client types ([dbffba2](https://github.com/hminghe/nuxt-unapi/commit/dbffba2))
+
+### 💅 Refactors
+
+- Rename `zFile` to `zodFile` and move to `zod.ts` ([908c8b0](https://github.com/hminghe/nuxt-unapi/commit/908c8b0))
+- Organize automatic import methods ([9a2372e](https://github.com/hminghe/nuxt-unapi/commit/9a2372e))
+
+### 🏡 Chore
+
+- Remove console.log ([00105b5](https://github.com/hminghe/nuxt-unapi/commit/00105b5))
+
+### ❤️ Contributors
+
+- Hminghe ([@hminghe](http://github.com/hminghe))
+
 ## v0.0.7
 
 [compare changes](https://github.com/hminghe/nuxt-unapi/compare/v0.0.6...v0.0.7)
