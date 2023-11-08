@@ -1,5 +1,4 @@
 import { ZodType, z } from 'zod'
-import { MultiPartData } from 'h3'
 import { DefineApiOptions } from './defineApi'
 
 type UnArray<T> = T extends (infer U)[] ? U : T;
@@ -12,12 +11,6 @@ export interface SafeFormData<T> extends FormData {
   get<K extends keyof T>(name: K): void
 }
 
-interface _File extends Partial<MultiPartData> {}
-
-export const zFile = () => z.custom<_File>((val) => {
-  // @ts-expect-error
-  return typeof val === 'object' && val.name && val.filename && val.data && val.type
-})
 
 export function defineFormDataApi<
   Props extends ZodType<any, any, any>,
