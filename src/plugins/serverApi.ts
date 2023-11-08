@@ -30,6 +30,13 @@ export async function serverApi(options: ModuleOptions, nuxt: Nuxt) {
     },
   ])
 
+  addServerImports([
+    {
+      name: 'defineFormDataApi',
+      from: resolver.resolve('./runtime/defineFormDataApi'),
+    },
+  ])
+
   const genServerFileName = 'server-unapi.ts'
 
   addTemplate({
