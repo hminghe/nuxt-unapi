@@ -2,32 +2,26 @@
 Get your module up and running quickly.
 
 Find and replace all on all files (CMD+SHIFT+F):
-- Name: My Module
+- Name: nuxt-unapi
 - Package name: nuxt-unapi
-- Description: My new Nuxt module
+- Description: Full-stack API for Nxut 3
 -->
 
-# My Module
+# nuxt-unapi
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![License][license-src]][license-href]
 [![Nuxt][nuxt-src]][nuxt-href]
 
-My new Nuxt module for doing amazing things.
+Full-stack API for Nxut 3.
 
 - [✨ &nbsp;Release Notes](/CHANGELOG.md)
 <!-- - [🏀 Online playground](https://stackblitz.com/github/your-org/nuxt-unapi?file=playground%2Fapp.vue) -->
 <!-- - [📖 &nbsp;Documentation](https://example.com) -->
 
-## Features
 
-<!-- Highlight some of the features your module provide here -->
-- ⛰ &nbsp;Foo
-- 🚠 &nbsp;Bar
-- 🌲 &nbsp;Baz
-
-## Quick Setup
+## Install
 
 1. Add `nuxt-unapi` dependency to your project
 
@@ -48,36 +42,60 @@ npm install --save-dev nuxt-unapi
 export default defineNuxtConfig({
   modules: [
     'nuxt-unapi'
-  ]
+  ],
+
+  // Required enable asyncContext
+  experimental: {
+    asyncContext: true,
+  },
 })
 ```
 
-That's it! You can now use My Module in your Nuxt app ✨
+✨✨✨
 
-## Development
+## Usage
 
-```bash
-# Install dependencies
-npm install
+Expose server functions under `api/**.ts`
+```typescript
+// api/user.ts
+import { z } from 'zod'
 
-# Generate type stubs
-npm run dev:prepare
+export const getUser = defineApi({
+  props: z.number(),
+  // id type is number
+  handler (id) {
+    return db.user.get(id)
+  },
+})
 
-# Develop with the playground
-npm run dev
+export const updateUser = defineApi({
+  props: z.object({
+    id: z.number(),
+    name: z.string(),
+    age: z.number().optional()
+  }),
+  
+  // props are secure data validated by Zod.
+  handler (props) {
+    return db.user.update(props)  
+  }
+})
+```
 
-# Build the playground
-npm run dev:build
+On the client side:
+```typescript
+import { getUser, updateUser } from '~/api/user.ts'
 
-# Run ESLint
-npm run lint
+const user = await getUser(1)
 
-# Run Vitest
-npm run test
-npm run test:watch
+user.name = 'nuxt-unapi'
 
-# Release new version
-npm run release
+const result = await updateUser(user)
+```
+
+Client validate. [Zod Docs](https://zod.dev/)
+```typescript
+updateUser.props.parse(user)
 ```
 
 <!-- Badges -->
