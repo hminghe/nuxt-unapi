@@ -1,6 +1,22 @@
 # Changelog
 
 
+## v0.0.9
+
+[compare changes](https://github.com/hminghe/nuxt-unapi/compare/v0.0.8...v0.0.9)
+
+### 🩹 Fixes
+
+- Ensure `handler` return type in `defineApi` is always a Promise ([a5b9aa2](https://github.com/hminghe/nuxt-unapi/commit/a5b9aa2))
+
+### 📖 Documentation
+
+- Update README.md ([618baf6](https://github.com/hminghe/nuxt-unapi/commit/618baf6))
+
+### ❤️ Contributors
+
+- Hminghe ([@hminghe](http://github.com/hminghe))
+
 ## v0.0.8
 
 [compare changes](https://github.com/hminghe/nuxt-unapi/compare/v0.0.7...v0.0.8)
