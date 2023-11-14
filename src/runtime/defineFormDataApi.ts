@@ -34,7 +34,7 @@ export function defineFormDataApi<
     o.handler[key] = o[key]
   })
 
-  type Handler = (props: ReturnType<SafeFormDataType>) => HandlerReturn
+  type Handler = (props: ReturnType<SafeFormDataType>) => Promise<HandlerReturn>
 
   return o.handler as Handler & Options & {
     sfd: SafeFormDataType

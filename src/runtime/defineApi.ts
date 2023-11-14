@@ -5,12 +5,12 @@ import { EventHandler } from 'h3'
 export interface DefineApiOptions<Props extends ZodType<any, any, any>, HandlerReturn> {
   props: Props
   middlewares?: EventHandler[],
-  handler: (data: z.infer<Props>) => HandlerReturn
+  handler: (data: z.infer<Props>) => Promise<HandlerReturn>
 }
 
 export interface DefineApiOptions2<HandlerReturn> {
   middlewares?: EventHandler[],
-  handler: (data?: any) => HandlerReturn
+  handler: (data?: any) => Promise<HandlerReturn>
 }
 
 export function defineApi<Props extends ZodType<any, any, any>, HandlerReturn>(options: DefineApiOptions<Props, HandlerReturn>): DefineApiOptions<Props, HandlerReturn>['handler'] & Omit<DefineApiOptions<Props, HandlerReturn>, 'handler'>
