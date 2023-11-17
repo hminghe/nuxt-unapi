@@ -4,7 +4,7 @@ Get your module up and running quickly.
 Find and replace all on all files (CMD+SHIFT+F):
 - Name: nuxt-unapi
 - Package name: nuxt-unapi
-- Description: Full-stack API for Nxut 3
+- Description: Full-stack API for Nuxt 3
 -->
 
 # nuxt-unapi
@@ -14,11 +14,10 @@ Find and replace all on all files (CMD+SHIFT+F):
 [![License][license-src]][license-href]
 [![Nuxt][nuxt-src]][nuxt-href]
 
-Full-stack API for Nxut 3.
+Full-stack API for Nuxt 3.
 
 - [✨ &nbsp;Release Notes](/CHANGELOG.md)
-<!-- - [🏀 Online playground](https://stackblitz.com/github/your-org/nuxt-unapi?file=playground%2Fapp.vue) -->
-<!-- - [📖 &nbsp;Documentation](https://example.com) -->
+- [🏀 Online playground](https://stackblitz.com/github/hminghe/nuxt-unapi?file=playground%2Fapp.vue)
 
 
 ## Install
