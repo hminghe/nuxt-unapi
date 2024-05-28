@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { defineFormDataApi, zFile } from "../../src/runtime/defineFormDataApi"
+import { defineFormDataApi } from "../../src/runtime/defineFormDataApi"
 
 export const test = defineApi({
   async handler () {
@@ -24,7 +24,7 @@ export const testParamsObject = defineApi({
     string: z.string(),
     optional: z.string().optional(),
   }),
-  handler (data) {
+  async handler (data) {
     return data
   },
   middlewares: [
@@ -47,7 +47,7 @@ export const testParamsObject = defineApi({
 export const testParamsString = defineApi({
   props: z.string(),
 
-  handler (data) {
+  async handler (data) {
     return data + ' test'
   }
 })
@@ -57,10 +57,10 @@ export const uploadFileTest = defineFormDataApi({
   props: z.object({
     test: z.coerce.number(),
     test1: z.string(),
-    file: zFile(),
+    file: zodFile(),
   }),
 
-  handler (props) {
+  async handler (props) {
     console.log('props', props)
 
     return `File size: ${props.file.data?.length}`
@@ -71,10 +71,10 @@ export const uploadMultipleFileTest = defineFormDataApi({
   props: z.object({
     test: z.coerce.number(),
     test1: z.string(),
-    files: zFile().array(),
+    files: zodFile().array(),
   }),
 
-  handler (props) {
+  async handler (props) {
     console.log('props', props)
 
     return `File: ${props.files.map(v => v.filename + ': ' + v.data?.length).join('----')}`

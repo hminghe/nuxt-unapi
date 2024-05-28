@@ -62,7 +62,7 @@ import { z } from 'zod'
 export const getUser = defineApi({
   props: z.number(),
   // id type is number
-  handler (id) {
+  async handler (id) {
     return db.user.get(id)
   },
 })
@@ -75,7 +75,7 @@ export const updateUser = defineApi({
   }),
   
   // props are secure data validated by Zod.
-  handler (props) {
+  async handler (props) {
     return db.user.update(props)  
   }
 })
